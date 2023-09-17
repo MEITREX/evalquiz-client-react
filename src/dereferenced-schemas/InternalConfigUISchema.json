@@ -1,0 +1,25 @@
+{
+  "elements": [
+    {
+      "scope": "#/properties/batches",
+      "type": "Control"
+    },
+    {
+      "scope": "#/properties/course_settings",
+      "type": "Control"
+    },
+    {
+      "scope": "#/properties/evaluation_settings",
+      "type": "Control"
+    },
+    {
+      "scope": "#/properties/generation_settings",
+      "type": "Control"
+    },
+    {
+      "scope": "#/properties/material_server_urls",
+      "type": "Control"
+    }
+  ],
+  "type": "VerticalLayout"
+}

@@ -1,0 +1,67 @@
+{
+  "elements": [
+    {
+      "type": "ListWithDetail",
+      "scope": "#/properties/batches",
+      "options": {
+        "detail": {
+          "type": "Categorization",
+          "elements": [
+            {
+              "type": "Category",
+              "label": "Capabilites",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/capabilites"
+                }
+              ]
+            },
+            {
+              "type": "Category",
+              "label": "Lecture Materials",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/lecture_materials",
+                  "options": {
+                    "detail": {
+                      "type": "LectureMaterialSimple",
+                      "scope": "#/properties/hash"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "Category",
+              "label": "Question To Generate",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/question_to_generate",
+                  "options": {
+                    "detail": {
+                      "type": "VerticalLayout",
+                      "elements": [
+                        {
+                          "type": "Control",
+                          "scope": "#/properties/question_type"
+                        },
+                        {
+                          "type": "LectureMaterialSimple",
+                          "scope": "#/properties/generation_result"
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "type": "VerticalLayout"
+}
