@@ -137,7 +137,7 @@ function ResponsiveAppBar({ onPageChange, onToggleAdvancedMode }: Props) {
               textDecoration: "none",
             }}
           >
-            LOGO
+            EVALQUIZ
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
             {pages.map((page) => (

@@ -1,10 +1,16 @@
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
-import { useState } from "react";
+import axios from "axios";
+import { useEffect, useState } from "react";
 
 interface Props {
   value: string;
   updateValue: (newHash: string) => void;
+}
+
+interface MaterialNameHashPair {
+  name: string;
+  hash: string;
 }
 
 const test = [
@@ -16,18 +22,33 @@ export default function LectureMaterialAutocomplete({
   value,
   updateValue,
 }: Props) {
-  const referencedHashs = test.map((valueNamePair) => ({
-    displayText: valueNamePair.name.concat(", ", valueNamePair.hash),
-    hash: valueNamePair.hash,
-  }));
+  const [materialHashNamePairs, setMaterialHashNamePairs] = useState<
+    Array<MaterialNameHashPair>
+  >([]);
 
-  const displayTexts = referencedHashs.map(
-    (displayTextHashPair) => displayTextHashPair.displayText
-  );
+  const [displayText, setDisplayText] = useState("");
 
-  const [displayText, setDisplayText] = useState(displayTexts[0]);
+  const getReferencedHashs = (
+    localMaterialHashNamePairs: Array<MaterialNameHashPair>
+  ) => {
+    return localMaterialHashNamePairs.map((valueNamePair) => ({
+      displayText: valueNamePair.name.concat(", ", valueNamePair.hash),
+      hash: valueNamePair.hash,
+    }));
+  };
 
-  const displayTextToHash = (displayText: string) => {
+  const getDisplayTexts = (referencedHashs: any[]) => {
+    return referencedHashs.map(
+      (displayTextHashPair) => displayTextHashPair.displayText
+    );
+  };
+
+  const getOptions = (materialHashNamePairs: Array<MaterialNameHashPair>) => {
+    let referencedHashs = getReferencedHashs(materialHashNamePairs);
+    return getDisplayTexts(referencedHashs);
+  };
+
+  const displayTextToHash = (referencedHashs: any[], displayText: string) => {
     let hash = null;
     referencedHashs.forEach((referencedHash) => {
       if (referencedHash.displayText === displayText) {
@@ -36,6 +57,21 @@ export default function LectureMaterialAutocomplete({
     });
     return hash;
   };
+
+  const fetchMaterialHashNamePairs = async () => {
+    axios
+      .get("http://localhost:5000/api/get_material_name_hash_pairs")
+      .then(function (response) {
+        setMaterialHashNamePairs(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  useEffect(() => {
+    fetchMaterialHashNamePairs();
+  }, []);
 
   return (
     <Autocomplete
@@ -46,11 +82,14 @@ export default function LectureMaterialAutocomplete({
           updateValue(value);
         } else {
           setDisplayText(newDisplayText);
-          updateValue(displayTextToHash(newDisplayText) ?? value);
+          let referencedHashs = getReferencedHashs(materialHashNamePairs);
+          updateValue(
+            displayTextToHash(referencedHashs, newDisplayText) ?? value
+          );
         }
       }}
       id="combo-box-demo"
-      options={displayTexts}
+      options={getOptions(materialHashNamePairs)}
       sx={{ width: 300 }}
       renderInput={(params) => (
         <TextField {...params} label="Lecture Material" />

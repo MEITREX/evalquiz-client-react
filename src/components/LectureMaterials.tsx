@@ -18,20 +18,10 @@ import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import axios from "axios";
 
-function createData(
-  name: string,
-  calories: number,
-  fat: number,
-  carbs: number,
-  protein: number
-) {
-  return { name, calories, fat, carbs, protein };
+interface MaterialNameHashPair {
+  name: string;
+  hash: string;
 }
-
-const rows = [
-  { name: "Test name 1", hash: "912309fj230j3fnkasfjdlkf" },
-  { name: "Test name 2", hash: "asdfas3adfadfasdfffasdsd" },
-];
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -53,66 +43,127 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
-const uploadFile = async (event: React.ChangeEvent) => {
-  await axios.postForm("https://httpbin.org/post", {
-    myVar: "material",
-    file: (event.target as HTMLInputElement).files,
-  });
-};
-
 export default function LectureMaterials() {
-  const [materialHashNamePairs, setMaterialHashNamePairs] = React.useState([
-    { name: "", hash: "" },
-  ]);
+  const [materialHashNamePairs, setMaterialHashNamePairs] = React.useState<
+    Array<MaterialNameHashPair>
+  >([]);
 
-  axios.get("/api/get_material_hash_name_pairs").then(function (response) {
-    setMaterialHashNamePairs(response.data);
-  });
+  const [fileName, setFileName] = React.useState("");
 
-  const [_, setSearchResult] = React.useState("");
+  const handleFileName = (event: { target: { value: any } }) => {
+    const fileName = event.target.value;
+    setFileName(fileName);
+  };
 
-  const [foundRows, setFoundRows] = React.useState(materialHashNamePairs);
+  const uploadFile = async (event: React.ChangeEvent) => {
+    let formData = new FormData();
+    let files = (event.target as HTMLInputElement).files;
+    if (files !== null && files !== undefined) {
+      formData.append("material", files[0]);
+      if (fileName !== "") {
+        formData.append("name", fileName);
+        await axios
+          .postForm("http://localhost:5000/api/upload_material", formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          })
+          .then(() => {
+            fetchMaterialHashNamePairs();
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      } else {
+        console.warn("File name not set!");
+      }
+    } else {
+      console.warn("File not found!");
+    }
+  };
 
-  const filter = (event: { target: { value: any } }) => {
-    const keyword = event.target.value;
-    console.log(keyword);
+  const deleteFile = (hash: string) => {
+    if (hash === "") {
+      console.warn("Invalid empty hash!");
+    } else {
+      axios
+        .get("http://localhost:5000/api/delete_material/".concat(hash))
+        .then(() => {
+          fetchMaterialHashNamePairs();
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  };
 
+  const fetchMaterialHashNamePairs = async () => {
+    axios
+      .get("http://localhost:5000/api/get_material_name_hash_pairs")
+      .then(function (response) {
+        setMaterialHashNamePairs(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  React.useEffect(() => {
+    fetchMaterialHashNamePairs();
+  }, []);
+
+  const [keyword, setKeyword] = React.useState("");
+
+  const filteredMaterialHashNamePairs = () => {
     if (keyword !== "") {
       const results = materialHashNamePairs.filter((row) => {
         return row.name.includes(keyword);
       });
-      setFoundRows(results);
+      return results;
     } else {
-      setFoundRows(materialHashNamePairs);
+      return materialHashNamePairs;
     }
-    setSearchResult(keyword);
   };
 
   return (
     <Container>
-      <Stack direction="row" spacing={2} sx={{ m: 2 }}>
+      <Stack direction="row" sx={{ m: 2 }} justifyContent="space-between">
         <TextField
           id="outlined-basic"
           size="small"
           label="Search"
           variant="outlined"
           sx={{ mt: 0, ml: -2 }}
-          onChange={filter}
+          onChange={(event) => {
+            setKeyword(event.target.value);
+          }}
         />
-        <Button
-          component="label"
-          variant="contained"
-          startIcon={<CloudUploadIcon />}
-          size="small"
-          sx={{ maxHeight: 40, padding: 2 }}
-        >
-          Upload file
-          <VisuallyHiddenInput
-            id="fileInput"
-            type="file"
-            onChange={uploadFile}
+        <Stack direction="row">
+          <Button
+            component="label"
+            variant="contained"
+            startIcon={<CloudUploadIcon />}
+            size="small"
+            sx={{ maxHeight: 40, padding: 2 }}
+          >
+            Upload file
+            <VisuallyHiddenInput
+              id="fileInput"
+              type="file"
+              onChange={uploadFile}
+            />
+          </Button>
+          <TextField
+            error={fileName === ""}
+            helperText={fileName === "" ? "Not allowed to be empty." : null}
+            id="outlined-basic"
+            size="small"
+            label="File Name"
+            variant="outlined"
+            sx={{ mt: 0 }}
+            onChange={handleFileName}
           />
-        </Button>
+        </Stack>
       </Stack>
       <Grid
         container
@@ -120,7 +171,7 @@ export default function LectureMaterials() {
         columns={{ xs: 4, sm: 8, md: 12 }}
         sx={{ margin: 10 }}
       >
-        {foundRows.map((row, index) => (
+        {filteredMaterialHashNamePairs().map((row, index) => (
           <Grid item xs={2} sm={4} md={4} key={index}>
             <Card>
               <CardHeader
@@ -139,10 +190,19 @@ export default function LectureMaterials() {
                 >
                   Hash:
                 </Typography>
-                <Typography variant="body2">{row.hash}</Typography>
+                <Typography variant="body2">
+                  {row.hash.substring(0, 16)} {row.hash.substring(16, 32)}
+                </Typography>
+                <Typography variant="body2">
+                  {row.hash.substring(32, 48)} {row.hash.substring(48, 64)}
+                </Typography>
               </CardContent>
               <CardActions>
-                <IconButton>
+                <IconButton
+                  onClick={() => {
+                    deleteFile(row.hash);
+                  }}
+                >
                   <DeleteIcon />
                 </IconButton>
               </CardActions>
