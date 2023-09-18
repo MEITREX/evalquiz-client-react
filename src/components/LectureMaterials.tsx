@@ -16,6 +16,7 @@ import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
+import axios from "axios";
 
 function createData(
   name: string,
@@ -52,22 +53,37 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
-export default function LectureMaterials() {
-  const [searchResult, setSearchResult] = React.useState("");
+const uploadFile = async (event: React.ChangeEvent) => {
+  await axios.postForm("https://httpbin.org/post", {
+    myVar: "material",
+    file: (event.target as HTMLInputElement).files,
+  });
+};
 
-  const [foundRows, setFoundRows] = React.useState(rows);
+export default function LectureMaterials() {
+  const [materialHashNamePairs, setMaterialHashNamePairs] = React.useState([
+    { name: "", hash: "" },
+  ]);
+
+  axios.get("/api/get_material_hash_name_pairs").then(function (response) {
+    setMaterialHashNamePairs(response.data);
+  });
+
+  const [_, setSearchResult] = React.useState("");
+
+  const [foundRows, setFoundRows] = React.useState(materialHashNamePairs);
 
   const filter = (event: { target: { value: any } }) => {
     const keyword = event.target.value;
     console.log(keyword);
 
     if (keyword !== "") {
-      const results = rows.filter((row) => {
+      const results = materialHashNamePairs.filter((row) => {
         return row.name.includes(keyword);
       });
       setFoundRows(results);
     } else {
-      setFoundRows(rows);
+      setFoundRows(materialHashNamePairs);
     }
     setSearchResult(keyword);
   };
@@ -91,7 +107,11 @@ export default function LectureMaterials() {
           sx={{ maxHeight: 40, padding: 2 }}
         >
           Upload file
-          <VisuallyHiddenInput type="file" />
+          <VisuallyHiddenInput
+            id="fileInput"
+            type="file"
+            onChange={uploadFile}
+          />
         </Button>
       </Stack>
       <Grid
