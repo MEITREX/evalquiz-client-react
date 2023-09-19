@@ -1,0 +1,10 @@
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: production-dockerfile
+    environment:
+      - REACT_APP_BACKEND_URL=http://localhost:5000
+    command: npm start
+    ports:
+      - 3000:3000
