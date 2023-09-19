@@ -1,0 +1,527 @@
+{
+  "additionalProperties": true,
+  "description": "*Matches question type specification.",
+  "properties": {
+    "batches": {
+      "items": {
+        "additionalProperties": true,
+        "properties": {
+          "capabilites": {
+            "items": {
+              "additionalProperties": true,
+              "properties": {
+                "educational_objective": {
+                  "enum": [
+                    "KNOW_AND_UNDERSTAND",
+                    "APPLY",
+                    "ANALYZE",
+                    "SYNTHESIZE",
+                    "EVALUATE",
+                    "INNOVATE"
+                  ],
+                  "title": "Educational Objective",
+                  "type": "string",
+                  "default": "KNOW_AND_UNDERSTAND"
+                },
+                "keywords": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array",
+                  "default": []
+                },
+                "relationship": {
+                  "enum": ["SIMILARITY", "DIFFERENCES", "ORDER", "COMPLEX"],
+                  "title": "Relationship",
+                  "type": "string",
+                  "default": "SIMILARITY"
+                }
+              },
+              "title": "Capability",
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "lecture_materials": {
+            "items": {
+              "additionalProperties": true,
+              "properties": {
+                "file_type": {
+                  "type": "string",
+                  "default": ""
+                },
+                "hash": {
+                  "type": "string",
+                  "default": ""
+                },
+                "page_filter": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "lower_bound": {
+                      "type": "integer"
+                    },
+                    "upper_bound": {
+                      "type": "integer"
+                    }
+                  },
+                  "title": "Page Filter",
+                  "type": "object",
+                  "default": {}
+                },
+                "reference": {
+                  "type": "string",
+                  "default": ""
+                },
+                "url": {
+                  "type": "string",
+                  "default": ""
+                }
+              },
+              "title": "Lecture Material",
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "question_to_generate": {
+            "items": {
+              "additionalProperties": true,
+              "properties": {
+                "evaluation_results": {
+                  "additionalProperties": {
+                    "additionalProperties": true,
+                    "properties": {
+                      "float_value": {
+                        "type": "number"
+                      },
+                      "str_value": {
+                        "type": "string"
+                      }
+                    },
+                    "title": "Evaluation Result",
+                    "type": "object"
+                  },
+                  "type": "object",
+                  "default": {}
+                },
+                "generation_result": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "multiple_choice": {
+                      "additionalProperties": true,
+                      "properties": {
+                        "answer_text": {
+                          "type": "string"
+                        },
+                        "distractor_text": {
+                          "items": {
+                            "type": "string"
+                          },
+                          "type": "array"
+                        },
+                        "question_text": {
+                          "type": "string"
+                        }
+                      },
+                      "title": "Multiple Choice",
+                      "type": "object"
+                    },
+                    "multiple_response": {
+                      "additionalProperties": true,
+                      "properties": {
+                        "answer_texts": {
+                          "items": {
+                            "type": "string"
+                          },
+                          "type": "array"
+                        },
+                        "distractor_texts": {
+                          "items": {
+                            "type": "string"
+                          },
+                          "type": "array"
+                        },
+                        "question_text": {
+                          "type": "string"
+                        }
+                      },
+                      "title": "Multiple Response",
+                      "type": "object"
+                    }
+                  },
+                  "title": "Generation Result",
+                  "type": "object"
+                },
+                "question_type": {
+                  "enum": ["MULTIPLE_CHOICE", "MULTIPLE_RESPONSE"],
+                  "title": "Question Type",
+                  "type": "string",
+                  "default": "MULTIPLE_CHOICE"
+                }
+              },
+              "title": "Question",
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "title": "Batch",
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "course_settings": {
+      "additionalProperties": true,
+      "properties": {
+        "advantageous_capabilities": {
+          "items": {
+            "additionalProperties": true,
+            "properties": {
+              "educational_objective": {
+                "enum": [
+                  "KNOW_AND_UNDERSTAND",
+                  "APPLY",
+                  "ANALYZE",
+                  "SYNTHESIZE",
+                  "EVALUATE",
+                  "INNOVATE"
+                ],
+                "title": "Educational Objective",
+                "type": "string"
+              },
+              "keywords": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "relationship": {
+                "enum": ["SIMILARITY", "DIFFERENCES", "ORDER", "COMPLEX"],
+                "title": "Relationship",
+                "type": "string"
+              }
+            },
+            "title": "Capability",
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "course_goals": {
+          "items": {
+            "additionalProperties": true,
+            "properties": {
+              "educational_objective": {
+                "enum": [
+                  "KNOW_AND_UNDERSTAND",
+                  "APPLY",
+                  "ANALYZE",
+                  "SYNTHESIZE",
+                  "EVALUATE",
+                  "INNOVATE"
+                ],
+                "title": "Educational Objective",
+                "type": "string"
+              },
+              "keywords": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "relationship": {
+                "enum": ["SIMILARITY", "DIFFERENCES", "ORDER", "COMPLEX"],
+                "title": "Relationship",
+                "type": "string"
+              }
+            },
+            "title": "Capability",
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "required_capabilites": {
+          "items": {
+            "additionalProperties": true,
+            "properties": {
+              "educational_objective": {
+                "enum": [
+                  "KNOW_AND_UNDERSTAND",
+                  "APPLY",
+                  "ANALYZE",
+                  "SYNTHESIZE",
+                  "EVALUATE",
+                  "INNOVATE"
+                ],
+                "title": "Educational Objective",
+                "type": "string"
+              },
+              "keywords": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "relationship": {
+                "enum": ["SIMILARITY", "DIFFERENCES", "ORDER", "COMPLEX"],
+                "title": "Relationship",
+                "type": "string"
+              }
+            },
+            "title": "Capability",
+            "type": "object"
+          },
+          "type": "array"
+        }
+      },
+      "title": "Course Settings",
+      "type": "object"
+    },
+    "evaluation_settings": {
+      "additionalProperties": true,
+      "properties": {
+        "metrics": {
+          "items": {
+            "additionalProperties": true,
+            "properties": {
+              "evaluation": {
+                "additionalProperties": true,
+                "properties": {
+                  "language_model_evaluation": {
+                    "additionalProperties": true,
+                    "properties": {
+                      "evaluation_description": {
+                        "type": "string"
+                      },
+                      "evaluation_result_type": {
+                        "additionalProperties": true,
+                        "properties": {
+                          "categorical": {
+                            "additionalProperties": true,
+                            "properties": {
+                              "categories": {
+                                "items": {
+                                  "type": "string"
+                                },
+                                "type": "array"
+                              }
+                            },
+                            "title": "Categorical",
+                            "type": "object"
+                          },
+                          "value_range": {
+                            "additionalProperties": true,
+                            "properties": {
+                              "lower_bound": {
+                                "type": "number"
+                              },
+                              "upper_bound": {
+                                "type": "number"
+                              }
+                            },
+                            "title": "Value Range",
+                            "type": "object"
+                          }
+                        },
+                        "title": "Evaluation Result Type",
+                        "type": "object"
+                      },
+                      "few_shot_examples": {
+                        "items": {
+                          "additionalProperties": true,
+                          "properties": {
+                            "evaluation_result": {
+                              "additionalProperties": true,
+                              "properties": {
+                                "float_value": {
+                                  "type": "number"
+                                },
+                                "str_value": {
+                                  "type": "string"
+                                }
+                              },
+                              "title": "Evaluation Result",
+                              "type": "object"
+                            },
+                            "generation_result": {
+                              "additionalProperties": true,
+                              "properties": {
+                                "multiple_choice": {
+                                  "additionalProperties": true,
+                                  "properties": {
+                                    "answer_text": {
+                                      "type": "string"
+                                    },
+                                    "distractor_text": {
+                                      "items": {
+                                        "type": "string"
+                                      },
+                                      "type": "array"
+                                    },
+                                    "question_text": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "title": "Multiple Choice",
+                                  "type": "object"
+                                },
+                                "multiple_response": {
+                                  "additionalProperties": true,
+                                  "properties": {
+                                    "answer_texts": {
+                                      "items": {
+                                        "type": "string"
+                                      },
+                                      "type": "array"
+                                    },
+                                    "distractor_texts": {
+                                      "items": {
+                                        "type": "string"
+                                      },
+                                      "type": "array"
+                                    },
+                                    "question_text": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "title": "Multiple Response",
+                                  "type": "object"
+                                }
+                              },
+                              "title": "Generation Result",
+                              "type": "object"
+                            }
+                          },
+                          "title": "Generation Evaluation Result",
+                          "type": "object"
+                        },
+                        "type": "array"
+                      },
+                      "model": {
+                        "type": "string"
+                      }
+                    },
+                    "title": "Language Model Evaluation",
+                    "type": "object"
+                  }
+                },
+                "title": "Evaluation",
+                "type": "object"
+              },
+              "mode": {
+                "additionalProperties": true,
+                "properties": {
+                  "by_metrics": {
+                    "additionalProperties": true,
+                    "properties": {
+                      "evaluation_reference": {
+                        "type": "string"
+                      },
+                      "evaluation_result": {
+                        "additionalProperties": true,
+                        "properties": {
+                          "float_value": {
+                            "type": "number"
+                          },
+                          "str_value": {
+                            "type": "string"
+                          }
+                        },
+                        "title": "Evaluation Result",
+                        "type": "object"
+                      },
+                      "evaluator_type": {
+                        "type": "string"
+                      }
+                    },
+                    "title": "By Metrics",
+                    "type": "object"
+                  },
+                  "complete": {
+                    "additionalProperties": true,
+                    "title": "Complete",
+                    "type": "object"
+                  },
+                  "overwrite": {
+                    "additionalProperties": true,
+                    "title": "Overwrite",
+                    "type": "object"
+                  }
+                },
+                "title": "Mode",
+                "type": "object"
+              },
+              "reference": {
+                "type": "string"
+              }
+            },
+            "title": "Metric",
+            "type": "object"
+          },
+          "type": "array"
+        }
+      },
+      "title": "Evaluation Settings",
+      "type": "object"
+    },
+    "generation_settings": {
+      "additionalProperties": true,
+      "properties": {
+        "mode": {
+          "additionalProperties": true,
+          "properties": {
+            "by_metrics": {
+              "additionalProperties": true,
+              "properties": {
+                "evaluation_reference": {
+                  "type": "string"
+                },
+                "evaluation_result": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "float_value": {
+                      "type": "number"
+                    },
+                    "str_value": {
+                      "type": "string"
+                    }
+                  },
+                  "title": "Evaluation Result",
+                  "type": "object"
+                },
+                "evaluator_type": {
+                  "type": "string"
+                }
+              },
+              "title": "By Metrics",
+              "type": "object"
+            },
+            "complete": {
+              "additionalProperties": true,
+              "title": "Complete",
+              "type": "object"
+            },
+            "overwrite": {
+              "additionalProperties": true,
+              "title": "Overwrite",
+              "type": "object"
+            }
+          },
+          "title": "Mode",
+          "type": "object"
+        },
+        "model": {
+          "type": "string"
+        }
+      },
+      "title": "Generation Settings",
+      "type": "object"
+    },
+    "material_server_urls": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    }
+  },
+  "title": "Internal Config",
+  "type": "object"
+}

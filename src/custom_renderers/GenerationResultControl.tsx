@@ -11,7 +11,8 @@ interface Props {
 }
 
 const style = {
-  display: "flex",
+  overflow: "auto",
+  "max-width": "800px",
   justifyContent: "center",
   borderRadius: "0.25em",
   backgroundColor: "#cecece",
@@ -22,8 +23,9 @@ const GenerationResultControl = ({ data }: Props) => (
   <Fragment>
     <Typography variant="h5">Generation result:</Typography>
     <br />
+    {console.log(data)}
     <div style={style}>
-      <pre id="boundData">{data}</pre>
+      <pre>{JSON.stringify(data, null, 2)}</pre>
     </div>
   </Fragment>
 );

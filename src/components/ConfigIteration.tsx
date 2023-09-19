@@ -1,6 +1,5 @@
 import { Fragment, useState, useMemo } from "react";
 import { JsonForms } from "@jsonforms/react";
-import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import {
@@ -8,7 +7,7 @@ import {
   materialRenderers,
 } from "@jsonforms/material-renderers";
 import { makeStyles } from "@mui/styles";
-import internalConfigSchema from "../dereferenced-schemas/InternalConfigSchema.json";
+import internalConfigSchema from "../dereferenced-schemas/InternalConfigSchemaWithDefaults.json";
 import internalConfigUISchema from "../dereferenced-schemas/InternalConfigUISchema.json";
 import internalConfigUISchemaSimple from "../dereferenced-schemas/InternalConfigUISchemaSimple.json";
 import Box from "@mui/material/Box";
@@ -19,6 +18,9 @@ import lectureMaterialControlTester from "../custom_renderers/lectureMaterialCon
 import LectureMaterialControl from "../custom_renderers/LectureMaterialControl";
 import generationResultControlTester from "../custom_renderers/generationResultControlTester";
 import GenerationResultControl from "../custom_renderers/GenerationResultControl";
+import SendIcon from "@mui/icons-material/Send";
+import axios from "axios";
+import { createAjv } from "@jsonforms/core";
 
 interface Props {
   advancedMode: boolean;
@@ -34,7 +36,6 @@ const useStyles = makeStyles({
     padding: "0.25em",
   },
   dataContent: {
-    display: "flex",
     justifyContent: "center",
     borderRadius: "0.25em",
     backgroundColor: "#cecece",
@@ -67,17 +68,45 @@ const renderers = [
 
 export default function ConfigIteration({ advancedMode }: Props) {
   const classes = useStyles();
-  const [data, setData] = useState<any>(initialData);
-  const stringifiedData = useMemo(() => JSON.stringify(data, null, 2), [data]);
+  const [config, setConfig] = useState<any>(initialData);
+  const stringifiedData = useMemo(
+    () => JSON.stringify(config, null, 2),
+    [config]
+  );
 
   const clearData = () => {
-    setData({});
+    setConfig({});
   };
 
   const [value, setValue] = useState("Config");
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
+  };
+
+  const handleDefaultsAjv = createAjv({ useDefaults: true });
+
+  const iterateConfig = async () => {
+    await axios
+      .post(
+        (process.env.REACT_APP_BACKEND_URL || "").concat("/api/iterate_config"),
+        {
+          config,
+        }
+      )
+      .then((result) => {
+        if (
+          result.data.internal_config !== null &&
+          result.data.internal_config !== undefined
+        ) {
+          console.log(config);
+          console.log(result.data.internal_config);
+          setConfig(result.data.internal_config);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   return (
@@ -99,7 +128,7 @@ export default function ConfigIteration({ advancedMode }: Props) {
             Raw JSON Data
           </Typography>
           <div className={classes.dataContent}>
-            <pre id="boundData">{stringifiedData}</pre>
+            <pre>{stringifiedData}</pre>
           </div>
           <Button
             className={classes.resetButton}
@@ -124,12 +153,20 @@ export default function ConfigIteration({ advancedMode }: Props) {
                   ? internalConfigUISchema
                   : internalConfigUISchemaSimple
               }
-              data={data}
+              data={config}
               renderers={renderers}
               cells={materialCells}
-              onChange={({ errors, data }) => setData(data)}
+              onChange={({ errors, data }) => setConfig(data)}
+              ajv={handleDefaultsAjv}
             />
           </div>
+          <Button
+            variant="contained"
+            onClick={iterateConfig}
+            endIcon={<SendIcon />}
+          >
+            Iterate Config
+          </Button>
         </Container>
       ) : null}
     </Fragment>

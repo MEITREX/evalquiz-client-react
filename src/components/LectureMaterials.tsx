@@ -62,12 +62,18 @@ export default function LectureMaterials() {
       formData.append("material", files[0]);
       if (fileName !== "") {
         formData.append("name", fileName);
-        await axios
-          .postForm("http://localhost:5000/api/upload_material", formData, {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          })
+        axios
+          .postForm(
+            (process.env.REACT_APP_BACKEND_URL || "").concat(
+              "/api/upload_material"
+            ),
+            formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            }
+          )
           .then(() => {
             fetchMaterialHashNamePairs();
           })
@@ -87,7 +93,11 @@ export default function LectureMaterials() {
       console.warn("Invalid empty hash!");
     } else {
       axios
-        .get("http://localhost:5000/api/delete_material/".concat(hash))
+        .get(
+          (process.env.REACT_APP_BACKEND_URL || "").concat(
+            "/api/delete_material/".concat(hash)
+          )
+        )
         .then(() => {
           fetchMaterialHashNamePairs();
         })
@@ -99,7 +109,11 @@ export default function LectureMaterials() {
 
   const fetchMaterialHashNamePairs = async () => {
     axios
-      .get("http://localhost:5000/api/get_material_name_hash_pairs")
+      .get(
+        (process.env.REACT_APP_BACKEND_URL || "").concat(
+          "/api/get_material_name_hash_pairs"
+        )
+      )
       .then(function (response) {
         setMaterialHashNamePairs(response.data);
       })

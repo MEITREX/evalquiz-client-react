@@ -13,11 +13,6 @@ interface MaterialNameHashPair {
   hash: string;
 }
 
-const test = [
-  { name: "hello", hash: "9384304" },
-  { name: "wow", hash: "sjdkflsjdf" },
-];
-
 export default function LectureMaterialAutocomplete({
   value,
   updateValue,
@@ -60,7 +55,11 @@ export default function LectureMaterialAutocomplete({
 
   const fetchMaterialHashNamePairs = async () => {
     axios
-      .get("http://localhost:5000/api/get_material_name_hash_pairs")
+      .get(
+        (process.env.REACT_APP_BACKEND_URL || "").concat(
+          "/api/get_material_name_hash_pairs"
+        )
+      )
       .then(function (response) {
         setMaterialHashNamePairs(response.data);
       })
