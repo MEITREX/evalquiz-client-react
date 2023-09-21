@@ -1,26 +1,26 @@
-import { Fragment, useState, useMemo } from "react";
-import { JsonForms } from "@jsonforms/react";
-import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
+import { Fragment, useState, useMemo } from 'react';
+import { JsonForms } from '@jsonforms/react';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
 import {
   materialCells,
   materialRenderers,
-} from "@jsonforms/material-renderers";
-import { makeStyles } from "@mui/styles";
-import internalConfigSchema from "../dereferenced-schemas/InternalConfigSchemaWithDefaults.json";
-import internalConfigUISchema from "../dereferenced-schemas/InternalConfigUISchema.json";
-import internalConfigUISchemaSimple from "../dereferenced-schemas/InternalConfigUISchemaSimple.json";
-import Box from "@mui/material/Box";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
-import Container from "@mui/material/Container";
-import lectureMaterialControlTester from "../custom_renderers/lectureMaterialControlTester";
-import LectureMaterialControl from "../custom_renderers/LectureMaterialControl";
-import generationResultControlTester from "../custom_renderers/generationResultControlTester";
-import GenerationResultControl from "../custom_renderers/GenerationResultControl";
-import SendIcon from "@mui/icons-material/Send";
-import axios from "axios";
-import { createAjv } from "@jsonforms/core";
+} from '@jsonforms/material-renderers';
+import { makeStyles } from '@mui/styles';
+import internalConfigSchema from '../dereferenced-schemas/InternalConfigSchemaWithDefaults.json';
+import internalConfigUISchema from '../dereferenced-schemas/InternalConfigUISchema.json';
+import internalConfigUISchemaSimple from '../dereferenced-schemas/InternalConfigUISchemaSimple.json';
+import Box from '@mui/material/Box';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import Container from '@mui/material/Container';
+import lectureMaterialControlTester from '../custom_renderers/lectureMaterialControlTester';
+import LectureMaterialControl from '../custom_renderers/LectureMaterialControl';
+import generationResultControlTester from '../custom_renderers/generationResultControlTester';
+import GenerationResultControl from '../custom_renderers/GenerationResultControl';
+import SendIcon from '@mui/icons-material/Send';
+import axios from 'axios';
+import { createAjv } from '@jsonforms/core';
 
 interface Props {
   advancedMode: boolean;
@@ -28,26 +28,26 @@ interface Props {
 
 const useStyles = makeStyles({
   container: {
-    padding: "1em",
-    width: "100%",
+    padding: '1em',
+    width: '100%',
   },
   title: {
-    textAlign: "center",
-    padding: "0.25em",
+    textAlign: 'center',
+    padding: '0.25em',
   },
   dataContent: {
-    justifyContent: "center",
-    borderRadius: "0.25em",
-    backgroundColor: "#cecece",
-    marginBottom: "1rem",
+    justifyContent: 'center',
+    borderRadius: '0.25em',
+    backgroundColor: '#cecece',
+    marginBottom: '1rem',
   },
   resetButton: {
-    margin: "auto !important",
-    display: "block !important",
+    margin: 'auto !important',
+    display: 'block !important',
   },
   demoform: {
-    margin: "auto",
-    padding: "1rem",
+    margin: 'auto',
+    padding: '1rem',
   },
 });
 
@@ -78,7 +78,7 @@ export default function ConfigIteration({ advancedMode }: Props) {
     setConfig({});
   };
 
-  const [value, setValue] = useState("Config");
+  const [value, setValue] = useState('Config');
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
@@ -89,19 +89,15 @@ export default function ConfigIteration({ advancedMode }: Props) {
   const iterateConfig = async () => {
     await axios
       .post(
-        (process.env.REACT_APP_BACKEND_URL || "").concat("/api/iterate_config"),
+        (process.env.REACT_APP_BACKEND_URL || '').concat('/api/iterate_config'),
         {
           config,
         }
       )
       .then((result) => {
-        if (
-          result.data.internal_config !== null &&
-          result.data.internal_config !== undefined
-        ) {
-          console.log(config);
-          console.log(result.data.internal_config);
-          setConfig(result.data.internal_config);
+        console.log(result.data);
+        if (result.data !== null && result.data !== undefined) {
+          setConfig(result.data);
         }
       })
       .catch((error) => {
@@ -111,20 +107,20 @@ export default function ConfigIteration({ advancedMode }: Props) {
 
   return (
     <Fragment>
-      <Box sx={{ width: "100%" }}>
+      <Box sx={{ width: '100%' }}>
         <Tabs
           value={value}
           onChange={handleChange}
-          aria-label="primary tabs example"
+          aria-label='primary tabs example'
           centered
         >
-          <Tab value="JSON" label="RAW JSON" />
-          <Tab value="Config" label="Editable Config" />
+          <Tab value='JSON' label='RAW JSON' />
+          <Tab value='Config' label='Editable Config' />
         </Tabs>
       </Box>
-      {value === "JSON" ? (
+      {value === 'JSON' ? (
         <Container>
-          <Typography variant={"h5"} className={classes.title}>
+          <Typography variant={'h5'} className={classes.title}>
             Raw JSON Data
           </Typography>
           <div className={classes.dataContent}>
@@ -133,16 +129,16 @@ export default function ConfigIteration({ advancedMode }: Props) {
           <Button
             className={classes.resetButton}
             onClick={clearData}
-            color="primary"
-            variant="contained"
+            color='primary'
+            variant='contained'
           >
             Clear data
           </Button>
         </Container>
       ) : null}
-      {value === "Config" ? (
+      {value === 'Config' ? (
         <Container>
-          <Typography variant={"h5"} className={classes.title}>
+          <Typography variant={'h5'} className={classes.title}>
             Evalquiz Config
           </Typography>
           <div className={classes.demoform}>
@@ -161,7 +157,7 @@ export default function ConfigIteration({ advancedMode }: Props) {
             />
           </div>
           <Button
-            variant="contained"
+            variant='contained'
             onClick={iterateConfig}
             endIcon={<SendIcon />}
           >
