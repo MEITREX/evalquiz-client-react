@@ -1,7 +1,8 @@
-import Autocomplete from "@mui/material/Autocomplete";
-import TextField from "@mui/material/TextField";
-import axios from "axios";
-import { useEffect, useState } from "react";
+import Autocomplete from '@mui/material/Autocomplete';
+import TextField from '@mui/material/TextField';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+import { useSnackbar } from 'notistack';
 
 interface Props {
   value: string;
@@ -17,17 +18,19 @@ export default function LectureMaterialAutocomplete({
   value,
   updateValue,
 }: Props) {
+  const { enqueueSnackbar } = useSnackbar();
+
   const [materialHashNamePairs, setMaterialHashNamePairs] = useState<
     Array<MaterialNameHashPair>
   >([]);
 
-  const [displayText, setDisplayText] = useState("");
+  const [displayText, setDisplayText] = useState('');
 
   const getReferencedHashs = (
     localMaterialHashNamePairs: Array<MaterialNameHashPair>
   ) => {
     return localMaterialHashNamePairs.map((valueNamePair) => ({
-      displayText: valueNamePair.name.concat(", ", valueNamePair.hash),
+      displayText: valueNamePair.name.concat(', ', valueNamePair.hash),
       hash: valueNamePair.hash,
     }));
   };
@@ -56,15 +59,18 @@ export default function LectureMaterialAutocomplete({
   const fetchMaterialHashNamePairs = async () => {
     axios
       .get(
-        (process.env.REACT_APP_BACKEND_URL || "").concat(
-          "/api/get_material_name_hash_pairs"
+        (process.env.REACT_APP_BACKEND_URL || '').concat(
+          '/api/get_material_name_hash_pairs'
         )
       )
       .then(function (response) {
         setMaterialHashNamePairs(response.data);
       })
       .catch((error) => {
-        console.log(error);
+        enqueueSnackbar(
+          'Failed to fetch materials from server: '.concat(error.message),
+          { variant: 'warning' }
+        );
       });
   };
 
@@ -87,11 +93,11 @@ export default function LectureMaterialAutocomplete({
           );
         }
       }}
-      id="combo-box-demo"
+      id='combo-box-demo'
       options={getOptions(materialHashNamePairs)}
       sx={{ width: 300 }}
       renderInput={(params) => (
-        <TextField {...params} label="Lecture Material" />
+        <TextField {...params} label='Lecture Material' />
       )}
     />
   );

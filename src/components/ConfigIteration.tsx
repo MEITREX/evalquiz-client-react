@@ -21,6 +21,7 @@ import GenerationResultControl from '../custom_renderers/GenerationResultControl
 import SendIcon from '@mui/icons-material/Send';
 import axios from 'axios';
 import { createAjv } from '@jsonforms/core';
+import { useSnackbar } from 'notistack';
 
 interface Props {
   advancedMode: boolean;
@@ -67,6 +68,8 @@ const renderers = [
 ];
 
 export default function ConfigIteration({ advancedMode }: Props) {
+  const { enqueueSnackbar } = useSnackbar();
+
   const classes = useStyles();
   const [config, setConfig] = useState<any>(initialData);
   const stringifiedData = useMemo(
@@ -87,6 +90,9 @@ export default function ConfigIteration({ advancedMode }: Props) {
   const handleDefaultsAjv = createAjv({ useDefaults: true });
 
   const iterateConfig = async () => {
+    enqueueSnackbar('Config iteration started', {
+      variant: 'info',
+    });
     await axios
       .post(
         (process.env.REACT_APP_BACKEND_URL || '').concat('/api/iterate_config'),
@@ -95,14 +101,48 @@ export default function ConfigIteration({ advancedMode }: Props) {
         }
       )
       .then((result) => {
-        console.log(result.data);
         if (result.data !== null && result.data !== undefined) {
-          setConfig(result.data);
+          processPipelineStatus(result.data);
         }
       })
       .catch((error) => {
-        console.log(error);
+        enqueueSnackbar('Failed to iterate config: '.concat(error.message), {
+          variant: 'warning',
+        });
       });
+  };
+
+  const processPipelineStatus = (pipelineStatus: any) => {
+    console.log(pipelineStatus);
+    let errorMessage = pipelineStatus.batch_status[0].error_message;
+    if (errorMessage !== null && errorMessage !== undefined) {
+      enqueueSnackbar('Failed to iterate config: '.concat(errorMessage), {
+        variant: 'warning',
+      });
+    } else {
+      let pipelineResult = pipelineStatus.result;
+      if (pipelineResult !== null && pipelineResult !== undefined) {
+        let internalConfig = pipelineResult.internal_config;
+        if (internalConfig !== null && internalConfig !== undefined) {
+          enqueueSnackbar(
+            `Config iteration complete!
+            View "Question To Generate" section for results`,
+            {
+              variant: 'success',
+            }
+          );
+          setConfig(internalConfig);
+        } else {
+          enqueueSnackbar('Failed to iterate config: Result is empty', {
+            variant: 'warning',
+          });
+        }
+      } else {
+        enqueueSnackbar('Failed to iterate config: Result is empty', {
+          variant: 'warning',
+        });
+      }
+    }
   };
 
   return (

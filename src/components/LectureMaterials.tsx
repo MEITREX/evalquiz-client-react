@@ -15,6 +15,12 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Container from '@mui/material/Container';
 import axios from 'axios';
+import { useSnackbar } from 'notistack';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogActions from '@mui/material/DialogActions';
 
 interface MaterialNameHashPair {
   name: string;
@@ -33,7 +39,31 @@ const VisuallyHiddenInput = styled('input')({
   width: 1,
 });
 
+const validUploadExtensions = [
+  '.md',
+  '.pptx',
+  '.csv',
+  '.tsv',
+  '.docx',
+  '.epub',
+  '.html',
+  '.ipynb',
+  '.json',
+  '.latex',
+  '.markdown',
+  '.man',
+  '.odt',
+  '.opml',
+  '.org',
+  '.ris',
+  '.rtf',
+  '.rst',
+  '.tex',
+];
+
 export default function LectureMaterials() {
+  const { enqueueSnackbar } = useSnackbar();
+
   const [materialHashNamePairs, setMaterialHashNamePairs] = React.useState<
     Array<MaterialNameHashPair>
   >([]);
@@ -45,42 +75,81 @@ export default function LectureMaterials() {
     setFileName(fileName);
   };
 
+  const validateFileExtension = (filename: string) => {
+    let extension = filename.split('.').pop()?.toLowerCase();
+    if (extension === null || extension === undefined) {
+      return false;
+    }
+    return validUploadExtensions.includes(extension);
+  };
+
+  const [open, setOpen] = React.useState(false);
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   const uploadFile = async (event: React.ChangeEvent) => {
     let formData = new FormData();
     let files = (event.target as HTMLInputElement).files;
     if (files !== null && files !== undefined) {
-      formData.append('material', files[0]);
-      if (fileName !== '') {
-        formData.append('name', fileName);
-        axios
-          .postForm(
-            (process.env.REACT_APP_BACKEND_URL || '').concat(
-              '/api/upload_material'
-            ),
-            formData,
+      if (validateFileExtension(files[0].name)) {
+        formData.append('material', files[0]);
+        if (fileName !== '') {
+          formData.append('name', fileName);
+          axios
+            .postForm(
+              (process.env.REACT_APP_BACKEND_URL || '').concat(
+                '/api/upload_material'
+              ),
+              formData,
+              {
+                headers: {
+                  'Content-Type': 'multipart/form-data',
+                },
+              }
+            )
+            .then(() => {
+              enqueueSnackbar('File successfully uploaded!', {
+                variant: 'success',
+              });
+              fetchMaterialHashNamePairs();
+            })
+            .catch((error) => {
+              enqueueSnackbar('Failed to upload file: '.concat(error.message), {
+                variant: 'warning',
+              });
+            });
+        } else {
+          enqueueSnackbar(
+            'Failed to upload file: File Name not allowed to be empty',
             {
-              headers: {
-                'Content-Type': 'multipart/form-data',
-              },
+              variant: 'warning',
             }
-          )
-          .then(() => {
-            fetchMaterialHashNamePairs();
-          })
-          .catch((error) => {
-            console.log(error);
-          });
+          );
+        }
       } else {
-        console.warn('File name not set!');
+        enqueueSnackbar('Failed to upload file: Type is not valid', {
+          variant: 'warning',
+          action: (key) => (
+            <Button size='small' onClick={() => setOpen(true)}>
+              Detail
+            </Button>
+          ),
+        });
       }
     } else {
-      console.warn('File not found!');
+      enqueueSnackbar('Failed to upload file: File not found', {
+        variant: 'warning',
+      });
     }
   };
 
   const deleteFile = (hash: string) => {
     if (hash === '') {
-      console.warn('Invalid empty hash!');
+      enqueueSnackbar('Invalid empty hash', {
+        variant: 'warning',
+      });
     } else {
       axios
         .get(
@@ -92,7 +161,10 @@ export default function LectureMaterials() {
           fetchMaterialHashNamePairs();
         })
         .catch((error) => {
-          console.log(error);
+          enqueueSnackbar(
+            'Failed to delete file on server: '.concat(error.message),
+            { variant: 'warning' }
+          );
         });
     }
   };
@@ -108,7 +180,10 @@ export default function LectureMaterials() {
         setMaterialHashNamePairs(response.data);
       })
       .catch((error) => {
-        console.log(error);
+        enqueueSnackbar(
+          'Failed to fetch material from server: '.concat(error.message),
+          { variant: 'warning' }
+        );
       });
   };
 
@@ -143,6 +218,16 @@ export default function LectureMaterials() {
           }}
         />
         <Stack direction='row'>
+          <TextField
+            error={fileName === ''}
+            helperText={fileName === '' ? 'Not allowed to be empty.' : null}
+            id='outlined-basic'
+            size='small'
+            label='File Name'
+            variant='outlined'
+            sx={{ mt: 0 }}
+            onChange={handleFileName}
+          />
           <Button
             component='label'
             variant='contained'
@@ -157,16 +242,6 @@ export default function LectureMaterials() {
               onChange={uploadFile}
             />
           </Button>
-          <TextField
-            error={fileName === ''}
-            helperText={fileName === '' ? 'Not allowed to be empty.' : null}
-            id='outlined-basic'
-            size='small'
-            label='File Name'
-            variant='outlined'
-            sx={{ mt: 0 }}
-            onChange={handleFileName}
-          />
         </Stack>
       </Stack>
       <Grid
@@ -214,6 +289,26 @@ export default function LectureMaterials() {
           </Grid>
         ))}
       </Grid>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby='alert-dialog-title'
+        aria-describedby='alert-dialog-description'
+      >
+        <DialogTitle id='alert-dialog-title'>
+          Upload a file of one of the following types:
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id='alert-dialog-description'>
+            {validUploadExtensions.join(', ')}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} autoFocus>
+            Ok
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 }

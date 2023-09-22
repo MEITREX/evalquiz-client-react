@@ -1,0 +1,6 @@
+FROM node:latest
+
+WORKDIR /evalquiz-client-react
+COPY . .
+
+CMD npm start

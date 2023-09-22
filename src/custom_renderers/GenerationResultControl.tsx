@@ -21,7 +21,6 @@ const GenerationResultControl = ({ data }: Props) => (
   <Fragment>
     <Typography variant='h5'>Generation result:</Typography>
     <br />
-    {console.log(data)}
     <div style={style}>
       <pre>{JSON.stringify(data, null, 2)}</pre>
     </div>
