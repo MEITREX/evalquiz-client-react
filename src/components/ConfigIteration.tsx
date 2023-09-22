@@ -21,7 +21,9 @@ import GenerationResultControl from '../custom_renderers/GenerationResultControl
 import SendIcon from '@mui/icons-material/Send';
 import axios from 'axios';
 import { createAjv } from '@jsonforms/core';
-import { useSnackbar } from 'notistack';
+import { useSnackbar, closeSnackbar } from 'notistack';
+import Tooltip from '@mui/material/Tooltip';
+import CircularProgress from '@mui/material/CircularProgress';
 
 interface Props {
   advancedMode: boolean;
@@ -90,8 +92,14 @@ export default function ConfigIteration({ advancedMode }: Props) {
   const handleDefaultsAjv = createAjv({ useDefaults: true });
 
   const iterateConfig = async () => {
-    enqueueSnackbar('Config iteration started', {
+    let key = enqueueSnackbar('Config iteration in progress', {
       variant: 'info',
+      persist: true,
+      action: () => (
+        <Box sx={{ padding: 2 }}>
+          <CircularProgress color='inherit' />
+        </Box>
+      ),
     });
     await axios
       .post(
@@ -104,11 +112,13 @@ export default function ConfigIteration({ advancedMode }: Props) {
         if (result.data !== null && result.data !== undefined) {
           processPipelineStatus(result.data);
         }
+        closeSnackbar(key);
       })
       .catch((error) => {
         enqueueSnackbar('Failed to iterate config: '.concat(error.message), {
           variant: 'warning',
         });
+        closeSnackbar(key);
       });
   };
 
@@ -169,7 +179,6 @@ export default function ConfigIteration({ advancedMode }: Props) {
           <Button
             className={classes.resetButton}
             onClick={clearData}
-            color='primary'
             variant='contained'
           >
             Clear data
@@ -196,13 +205,15 @@ export default function ConfigIteration({ advancedMode }: Props) {
               ajv={handleDefaultsAjv}
             />
           </div>
-          <Button
-            variant='contained'
-            onClick={iterateConfig}
-            endIcon={<SendIcon />}
-          >
-            Iterate Config
-          </Button>
+          <Tooltip title='Sends config to server in order to generate questions'>
+            <Button
+              variant='contained'
+              onClick={iterateConfig}
+              endIcon={<SendIcon />}
+            >
+              Iterate Config
+            </Button>
+          </Tooltip>
         </Container>
       ) : null}
     </Fragment>

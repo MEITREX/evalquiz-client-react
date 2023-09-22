@@ -1,6 +1,7 @@
 import { withJsonFormsControlProps } from '@jsonforms/react';
 import Typography from '@mui/material/Typography';
 import { Fragment } from 'react';
+import GenerationResultModifier from './GenerationResultModifier';
 
 interface Props {
   data: any;
@@ -8,23 +9,11 @@ interface Props {
   path: string;
 }
 
-const style = {
-  overflow: 'auto',
-  'max-width': '800px',
-  justifyContent: 'center',
-  borderRadius: '0.25em',
-  backgroundColor: '#cecece',
-  marginBottom: '1rem',
-};
-
-const GenerationResultControl = ({ data }: Props) => (
-  <Fragment>
-    <Typography variant='h5'>Generation result:</Typography>
-    <br />
-    <div style={style}>
-      <pre>{JSON.stringify(data, null, 2)}</pre>
-    </div>
-  </Fragment>
+const GenerationResultControl = ({ data, handleChange, path }: Props) => (
+  <GenerationResultModifier
+    value={data}
+    updateValue={(newValue: any) => handleChange(path, newValue)}
+  />
 );
 
 export default withJsonFormsControlProps(GenerationResultControl);

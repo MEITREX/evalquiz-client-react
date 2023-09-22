@@ -34,7 +34,7 @@
                   "enum": ["SIMILARITY", "DIFFERENCES", "ORDER", "COMPLEX"],
                   "title": "Relationship",
                   "type": "string",
-                  "default": "SIMILARITY"
+                  "default": "COMPLEX"
                 }
               },
               "title": "Capability",
