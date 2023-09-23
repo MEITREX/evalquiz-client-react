@@ -3,4 +3,6 @@ FROM node:latest
 WORKDIR /evalquiz-client-react
 COPY . .
 
+RUN echo "REACT_APP_BACKEND_URL=http://localhost:8000/server" > ./.env
+
 CMD npm start

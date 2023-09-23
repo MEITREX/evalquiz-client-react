@@ -6,6 +6,8 @@ COPY package.json .
 RUN npm install
 COPY . .
 
+RUN echo "REACT_APP_BACKEND_URL=https://evalquiz.azurewebsites.net/server" > ./.env
+
 ARG REACT_APP_API_BASE_URL
 ENV REACT_APP_API_BASE_URL=$REACT_APP_API_BASE_URL
 
