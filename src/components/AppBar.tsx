@@ -15,16 +15,22 @@ import AdbIcon from '@mui/icons-material/Adb';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
+import TourIcon from '@mui/icons-material/Tour';
 
 interface Props {
   onPageChange: (item: string) => void;
   onToggleAdvancedMode: (item: boolean) => void;
+  onSetTour: (item: boolean) => void;
 }
 
 const pages = ['Lecture Materials', 'Config Iteration'];
 const settings = ['Advanced mode'];
 
-function ResponsiveAppBar({ onPageChange, onToggleAdvancedMode }: Props) {
+function ResponsiveAppBar({
+  onPageChange,
+  onToggleAdvancedMode,
+  onSetTour,
+}: Props) {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
     null
   );
@@ -142,6 +148,7 @@ function ResponsiveAppBar({ onPageChange, onToggleAdvancedMode }: Props) {
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             {pages.map((page) => (
               <Button
+                id={page}
                 key={page}
                 onClick={() => {
                   onPageChange(page);
@@ -154,6 +161,16 @@ function ResponsiveAppBar({ onPageChange, onToggleAdvancedMode }: Props) {
           </Box>
 
           <Box sx={{ flexGrow: 0 }}>
+            <Tooltip title='Start guided tour'>
+              <IconButton
+                onClick={() => {
+                  onSetTour(true);
+                }}
+                sx={{ p: 0, mr: 1 }}
+              >
+                <TourIcon fontSize='large' sx={{ color: 'white' }} />
+              </IconButton>
+            </Tooltip>
             <Tooltip title='Open settings'>
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 <SettingsIcon fontSize='large' sx={{ color: 'white' }} />
@@ -175,8 +192,8 @@ function ResponsiveAppBar({ onPageChange, onToggleAdvancedMode }: Props) {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              {settings.map((setting) => (
-                <MenuItem>
+              {settings.map((setting, index) => (
+                <MenuItem key={index}>
                   <FormGroup>
                     <FormControlLabel
                       control={

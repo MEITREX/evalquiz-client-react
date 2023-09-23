@@ -1,6 +1,4 @@
 import { withJsonFormsControlProps } from '@jsonforms/react';
-import Typography from '@mui/material/Typography';
-import { Fragment } from 'react';
 import GenerationResultModifier from './GenerationResultModifier';
 
 interface Props {

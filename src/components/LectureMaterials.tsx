@@ -15,12 +15,15 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Container from '@mui/material/Container';
 import axios from 'axios';
-import { useSnackbar } from 'notistack';
+import { SnackbarKey, closeSnackbar, useSnackbar } from 'notistack';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogActions from '@mui/material/DialogActions';
+import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
+import InfoIcon from '@mui/icons-material/Info';
 
 interface MaterialNameHashPair {
   name: string;
@@ -89,47 +92,65 @@ export default function LectureMaterials() {
     setOpen(false);
   };
 
+  const uploadFileSnackbarMessage = () => {
+    let key = enqueueSnackbar('File upload in progress', {
+      variant: 'info',
+      persist: true,
+      action: () => (
+        <Box sx={{ padding: 2 }}>
+          <CircularProgress color='inherit' />
+        </Box>
+      ),
+    });
+    return key;
+  };
+
+  const uploadFileRequest = (formData: FormData, key: SnackbarKey) => {
+    axios
+      .postForm(
+        (process.env.REACT_APP_BACKEND_URL || '').concat(
+          '/api/upload_material'
+        ),
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      )
+      .then(() => {
+        enqueueSnackbar('File successfully uploaded!', {
+          variant: 'success',
+        });
+        enqueueSnackbar('You can proceed with Question Generation in ', {
+          variant: 'info',
+        });
+        closeSnackbar(key);
+        fetchMaterialHashNamePairs();
+      })
+      .catch((error) => {
+        enqueueSnackbar('Failed to upload file: '.concat(error.message), {
+          variant: 'warning',
+        });
+        closeSnackbar(key);
+      });
+  };
+
   const uploadFile = async (event: React.ChangeEvent) => {
     let formData = new FormData();
     let files = (event.target as HTMLInputElement).files;
     if (files !== null && files !== undefined) {
       if (validateFileExtension(files[0].name)) {
         formData.append('material', files[0]);
+        let uploadFileName = files[0].name;
         if (fileName !== '') {
-          formData.append('name', fileName);
-          axios
-            .postForm(
-              (process.env.REACT_APP_BACKEND_URL || '').concat(
-                '/api/upload_material'
-              ),
-              formData,
-              {
-                headers: {
-                  'Content-Type': 'multipart/form-data',
-                },
-              }
-            )
-            .then(() => {
-              enqueueSnackbar('File successfully uploaded!', {
-                variant: 'success',
-              });
-              fetchMaterialHashNamePairs();
-            })
-            .catch((error) => {
-              enqueueSnackbar('Failed to upload file: '.concat(error.message), {
-                variant: 'warning',
-              });
-            });
-        } else {
-          enqueueSnackbar(
-            'Failed to upload file: File Name not allowed to be empty',
-            {
-              variant: 'warning',
-            }
-          );
+          uploadFileName = fileName;
         }
+        formData.append('name', uploadFileName);
+        let key = uploadFileSnackbarMessage();
+        uploadFileRequest(formData, key);
       } else {
-        enqueueSnackbar('Failed to upload file: Type is not valid', {
+        enqueueSnackbar('Failed to upload file: File type is not supported', {
           variant: 'warning',
           action: (key) => (
             <Button size='small' onClick={() => setOpen(true)}>
@@ -218,9 +239,15 @@ export default function LectureMaterials() {
           }}
         />
         <Stack direction='row'>
+          <Button
+            startIcon={<InfoIcon />}
+            size='large'
+            sx={{ maxHeight: 40, mr: -2 }}
+            onClick={() => {
+              setOpen(true);
+            }}
+          ></Button>
           <TextField
-            error={fileName === ''}
-            helperText={fileName === '' ? 'Not allowed to be empty.' : null}
             id='outlined-basic'
             size='small'
             label='File Name'
@@ -229,6 +256,7 @@ export default function LectureMaterials() {
             onChange={handleFileName}
           />
           <Button
+            id='uploadFileButton'
             component='label'
             variant='contained'
             startIcon={<CloudUploadIcon />}
@@ -237,7 +265,7 @@ export default function LectureMaterials() {
           >
             Upload file
             <VisuallyHiddenInput
-              id='fileInput'
+              id='uploadFile'
               type='file'
               onChange={uploadFile}
             />
@@ -256,7 +284,7 @@ export default function LectureMaterials() {
               <CardHeader
                 title={row.name}
                 action={
-                  <IconButton aria-label='settings'>
+                  <IconButton size='large'>
                     <ArticleIcon />
                   </IconButton>
                 }
@@ -289,18 +317,19 @@ export default function LectureMaterials() {
           </Grid>
         ))}
       </Grid>
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        aria-labelledby='alert-dialog-title'
-        aria-describedby='alert-dialog-description'
-      >
-        <DialogTitle id='alert-dialog-title'>
-          Upload a file of one of the following types:
-        </DialogTitle>
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>Upload a file of one of the following types:</DialogTitle>
         <DialogContent>
-          <DialogContentText id='alert-dialog-description'>
+          <DialogContentText>
             {validUploadExtensions.join(', ')}
+          </DialogContentText>
+          <hr />
+          <DialogContentText>
+            Max. allowed file size: 500 megabytes.
+          </DialogContentText>
+          <hr />
+          <DialogContentText>
+            A file name can be set but is not mandatory.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
