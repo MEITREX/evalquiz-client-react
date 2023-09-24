@@ -1,7 +1,6 @@
 import * as React from 'react';
 import Button from '@mui/material/Button';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import { styled } from '@mui/material/styles';
 import Grid from '@mui/material/Grid';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
@@ -24,23 +23,12 @@ import DialogActions from '@mui/material/DialogActions';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import InfoIcon from '@mui/icons-material/Info';
+import VisuallyHiddenInput from './VisuallyHiddenInput';
 
 interface MaterialNameHashPair {
   name: string;
   hash: string;
 }
-
-const VisuallyHiddenInput = styled('input')({
-  clip: 'rect(0 0 0 0)',
-  clipPath: 'inset(50%)',
-  height: 1,
-  overflow: 'hidden',
-  position: 'absolute',
-  bottom: 0,
-  left: 0,
-  whiteSpace: 'nowrap',
-  width: 1,
-});
 
 const validUploadExtensions = [
   'md',
@@ -140,10 +128,10 @@ export default function LectureMaterials() {
   };
 
   const uploadFile = async (event: React.ChangeEvent) => {
-    let formData = new FormData();
     let files = (event.target as HTMLInputElement).files;
     if (files !== null && files !== undefined) {
       if (validateFileExtension(files[0].name)) {
+        let formData = new FormData();
         formData.append('material', files[0]);
         let uploadFileName = files[0].name;
         if (fileName !== '') {
@@ -259,7 +247,7 @@ export default function LectureMaterials() {
             onChange={handleFileName}
           />
           <Button
-            id='uploadFileButton'
+            id='upload-file-button'
             component='label'
             variant='contained'
             startIcon={<CloudUploadIcon />}
@@ -267,11 +255,7 @@ export default function LectureMaterials() {
             sx={{ maxHeight: 40, padding: 2 }}
           >
             Upload file
-            <VisuallyHiddenInput
-              id='uploadFile'
-              type='file'
-              onChange={uploadFile}
-            />
+            <VisuallyHiddenInput type='file' onChange={uploadFile} />
           </Button>
         </Stack>
       </Stack>

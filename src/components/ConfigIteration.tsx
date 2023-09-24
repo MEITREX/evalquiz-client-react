@@ -1,4 +1,4 @@
-import { Fragment, useState, useMemo } from 'react';
+import { Fragment, useState, useMemo, ChangeEvent } from 'react';
 import { JsonForms } from '@jsonforms/react';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
@@ -24,6 +24,11 @@ import { createAjv } from '@jsonforms/core';
 import { useSnackbar, closeSnackbar } from 'notistack';
 import Tooltip from '@mui/material/Tooltip';
 import CircularProgress from '@mui/material/CircularProgress';
+import FileUploadOutlinedIcon from '@mui/icons-material/FileUploadOutlined';
+import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
+import fileDownload from 'js-file-download';
+import Stack from '@mui/material/Stack';
+import VisuallyHiddenInput from './VisuallyHiddenInput';
 
 interface Props {
   advancedMode: boolean;
@@ -43,10 +48,6 @@ const useStyles = makeStyles({
     borderRadius: '0.25em',
     backgroundColor: '#cecece',
     marginBottom: '1rem',
-  },
-  resetButton: {
-    margin: 'auto !important',
-    display: 'block !important',
   },
   demoform: {
     margin: 'auto',
@@ -155,6 +156,46 @@ export default function ConfigIteration({ advancedMode }: Props) {
     }
   };
 
+  const validateInternalConfig =
+    handleDefaultsAjv.compile(internalConfigSchema);
+
+  const handleDownloadConfig = () => {
+    fileDownload(JSON.stringify(config, null, 2), 'config.json');
+  };
+
+  const handleUploadConfig = () => {};
+
+  const uploadConfig = (event: ChangeEvent) => {
+    let files = (event.target as HTMLInputElement).files;
+    if (files !== null && files !== undefined) {
+      let fileReader = new FileReader();
+      fileReader.onload = function () {
+        let text = fileReader.result;
+        if (text !== null && text !== undefined) {
+          try {
+            let newConfig = JSON.parse(text as string);
+            if (validateInternalConfig(newConfig)) {
+              setConfig(newConfig);
+            } else {
+              enqueueSnackbar('Failed to upload config: Config not valid', {
+                variant: 'warning',
+              });
+            }
+          } catch {
+            enqueueSnackbar('Failed to upload config: Config not JSON', {
+              variant: 'warning',
+            });
+          }
+        } else {
+          enqueueSnackbar('Failed to upload config: Config not present', {
+            variant: 'warning',
+          });
+        }
+      };
+      fileReader.readAsText(files[0]);
+    }
+  };
+
   return (
     <Fragment>
       <Box sx={{ width: '100%' }}>
@@ -174,15 +215,41 @@ export default function ConfigIteration({ advancedMode }: Props) {
             Raw JSON Data
           </Typography>
           <div className={classes.dataContent}>
-            <pre>{stringifiedData}</pre>
+            <pre id='raw-json-data'>{stringifiedData}</pre>
           </div>
-          <Button
-            className={classes.resetButton}
-            onClick={clearData}
-            variant='contained'
-          >
-            Clear data
-          </Button>
+          <Stack direction='row' sx={{ m: 2 }} justifyContent='space-between'>
+            <Button
+              id='download-config-button'
+              startIcon={<FileDownloadOutlinedIcon />}
+              aria-haspopup='true'
+              variant='outlined'
+              onClick={handleDownloadConfig}
+            >
+              Download
+            </Button>
+            <Button
+              id='clear-config-button'
+              onClick={clearData}
+              variant='contained'
+            >
+              Clear Config
+            </Button>
+            <Button
+              id='upload-config-button'
+              startIcon={<FileUploadOutlinedIcon />}
+              component='label'
+              aria-haspopup='true'
+              variant='outlined'
+              onClick={handleUploadConfig}
+            >
+              Upload
+              <VisuallyHiddenInput
+                id='uploadFile'
+                type='file'
+                onChange={uploadConfig}
+              />
+            </Button>
+          </Stack>
         </Container>
       ) : null}
       {value === 'Config' ? (

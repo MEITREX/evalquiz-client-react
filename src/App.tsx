@@ -15,7 +15,7 @@ export default function App() {
     setCurrentPage(item);
   };
 
-  const [tour, setTour] = useState(false);
+  const [tour, setTour] = useState(true);
 
   const handleSetTour = (value: boolean) => {
     if (value === true) {

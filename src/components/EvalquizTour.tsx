@@ -1,5 +1,7 @@
 import Tour from 'reactour';
 import { Fragment } from 'react';
+import Typography from '@mui/material/Typography';
+import Stack from '@mui/material/Stack';
 
 interface Props {
   tour: boolean;
@@ -13,7 +15,34 @@ export default function EvalquizTour({ tour, onSetTour }: Props) {
 
   const steps = [
     {
-      selector: '[id="uploadFileButton"]',
+      content: () => (
+        <Fragment>
+          <Stack direction='row'>
+            Welcome to:
+            <Typography
+              sx={{
+                mr: 2,
+                ml: 1,
+                display: { xs: 'none', md: 'flex' },
+                fontFamily: 'monospace',
+                fontWeight: 700,
+                letterSpacing: '.3rem',
+                color: 'inherit',
+                textDecoration: 'none',
+              }}
+            >
+              EVALQUIZ
+            </Typography>
+          </Stack>
+          <br /> A system for generating self-assessement from lecture
+          materials.
+          <hr />
+          This tour will guide you step-by-step through the interface.
+        </Fragment>
+      ),
+    },
+    {
+      selector: '[id="upload-file-button"]',
       content: 'Upload a lecture material!',
     },
     {
@@ -76,8 +105,8 @@ export default function EvalquizTour({ tour, onSetTour }: Props) {
       content: () => (
         <Fragment>
           Choose Educational Objective: <br />
-          <br /> Describes educational goal of our Capability. Goal is reached,
-          if a student has acquired the Capability.
+          <br /> Describes educational goal of Capability. Goal is reached, if a
+          student has acquired the Capability.
         </Fragment>
       ),
     },
@@ -105,7 +134,7 @@ export default function EvalquizTour({ tour, onSetTour }: Props) {
       action: (element: {
         children: { children: { children: any[] }[] }[];
       }) => {
-        element.children[0].children[0].children[0].value = 'my_new_keyword';
+        element.children[0].children[0].children[0].value = 'photosynthesis';
       },
     },
     {
@@ -197,8 +226,39 @@ export default function EvalquizTour({ tour, onSetTour }: Props) {
       content: 'Generate questions as configured.',
       action: (element: { click: () => void }) => {
         element.click();
-        closeTour();
       },
+    },
+    {
+      selector: '.MuiTabs-scroller.MuiTabs-hideScrollbar.MuiTabs-scrollableX',
+      content:
+        'Generation results can be found for each batch under "Question To Generate".',
+    },
+    {
+      selector: '.MuiButtonBase-root.MuiTab-root.MuiTab-textColorPrimary',
+      content: 'As well as in the raw JSON data.',
+      action: (element: { click: () => void }) => {
+        element.click();
+      },
+    },
+    {
+      selector: '[id=raw-json-data]',
+      content: "Let's take a look at our config in JSON.",
+    },
+    {
+      selector: '[id=download-config-button]',
+      content: 'We can download our config as `config.json`',
+    },
+    {
+      selector: '[id=clear-config-button]',
+      content: 'Clear our config.',
+    },
+    {
+      selector: '[id=upload-config-button]',
+      content: 'And upload a saved as `config.js` at a later time.',
+    },
+    {
+      content: 'And upload a saved as `config.js` at a later time.',
+      action: closeTour,
     },
   ];
 
@@ -208,9 +268,10 @@ export default function EvalquizTour({ tour, onSetTour }: Props) {
       steps={steps}
       onRequestClose={closeTour}
       prevStep={() => {}}
+      prevButton=' '
       disableDotsNavigation={true}
       disableKeyboardNavigation={['left']}
-      closeWithMask={false}
+      closeWithMask={true}
       startAt={0}
       className='helper'
       rounded={5}
