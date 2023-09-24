@@ -47,7 +47,7 @@ export default function EvalquizTour({ tour, onSetTour }: Props) {
     },
     {
       selector:
-        '[class="MuiButtonBase-root MuiListItem-root MuiListItem-gutters MuiListItem-padding MuiListItem-button MuiListItem-secondaryAction css-15ofzo3-MuiButtonBase-root-MuiListItem-root"]',
+        '.MuiButtonBase-root.MuiListItem-root.MuiListItem-gutters.MuiListItem-padding.MuiListItem-button.MuiListItem-secondaryAction',
       content: 'View batch.',
       action: (element: { click: () => void }) => {
         element.click();
@@ -55,7 +55,7 @@ export default function EvalquizTour({ tour, onSetTour }: Props) {
     },
     {
       selector:
-        '[class="MuiButtonBase-root MuiTab-root MuiTab-textColorInherit Mui-selected css-cjctlb-MuiButtonBase-root-MuiTab-root"]',
+        '.MuiButtonBase-root.MuiTab-root.MuiTab-textColorInherit.Mui-selected',
       content: 'Edit Capabilites to influence question generation outcome.',
       action: (element: { click: () => void }) => {
         element.click();
@@ -76,7 +76,7 @@ export default function EvalquizTour({ tour, onSetTour }: Props) {
     },
     {
       selector:
-        '[class="MuiButtonBase-root MuiAccordionSummary-root MuiAccordionSummary-gutters css-sh22l5-MuiButtonBase-root-MuiAccordionSummary-root"]',
+        '.MuiButtonBase-root.MuiAccordionSummary-root.MuiAccordionSummary-gutters',
       content: 'View Capability.',
       action: (element: { click: () => void }) => {
         element.click();
@@ -100,8 +100,7 @@ export default function EvalquizTour({ tour, onSetTour }: Props) {
       },
     },
     {
-      selector:
-        '[class="MuiInputBase-input MuiInput-input MuiInputBase-inputAdornedEnd css-1x51dt5-MuiInputBase-input-MuiInput-input"]',
+      selector: 'tr.MuiTableRow-root.MuiTableRow-hover',
       content: () => (
         <Fragment>
           Type keyword: <br />
@@ -109,8 +108,10 @@ export default function EvalquizTour({ tour, onSetTour }: Props) {
           use for question generation.
         </Fragment>
       ),
-      action: (element: { value: string }) => {
-        element.value = 'my_new_keyword';
+      action: (element: {
+        children: { children: { children: any[] }[] }[];
+      }) => {
+        element.children[0].children[0].children[0].value = 'my_new_keyword';
       },
     },
     {
@@ -125,11 +126,10 @@ export default function EvalquizTour({ tour, onSetTour }: Props) {
       ),
     },
     {
-      selector:
-        '[class="MuiTabs-flexContainer css-heg063-MuiTabs-flexContainer"]',
+      selector: '.MuiTabs-scroller.MuiTabs-hideScrollbar.MuiTabs-scrollableX',
       content: 'Go to lecture materials.',
-      action: (element: { children: { click: () => void }[] }) => {
-        let child = element.children[1];
+      action: (element: { children: { children: any[] }[] }) => {
+        let child = element.children[0].children[1];
         child.click();
       },
     },
@@ -142,15 +142,14 @@ export default function EvalquizTour({ tour, onSetTour }: Props) {
     },
     {
       selector:
-        '[class="MuiButtonBase-root MuiAccordionSummary-root MuiAccordionSummary-gutters css-sh22l5-MuiButtonBase-root-MuiAccordionSummary-root"]',
+        '.MuiButtonBase-root.MuiAccordionSummary-root.MuiAccordionSummary-gutters',
       content: 'View lecture material.',
       action: (element: { click: () => void }) => {
         element.click();
       },
     },
     {
-      selector:
-        '[class="MuiAccordionDetails-root css-15v22id-MuiAccordionDetails-root"]',
+      selector: '.MuiAccordionDetails-root',
       content: () => (
         <Fragment>
           Select lecture material: <br />
@@ -160,11 +159,10 @@ export default function EvalquizTour({ tour, onSetTour }: Props) {
       ),
     },
     {
-      selector:
-        '[class="MuiTabs-flexContainer css-heg063-MuiTabs-flexContainer"]',
+      selector: '.MuiTabs-scroller.MuiTabs-hideScrollbar.MuiTabs-scrollableX',
       content: 'Go to question to generate',
-      action: (element: { children: { click: () => void }[] }) => {
-        let child = element.children[2];
+      action: (element: { children: { children: any[] }[] }) => {
+        let child = element.children[0].children[2];
         child.click();
       },
     },
@@ -177,7 +175,7 @@ export default function EvalquizTour({ tour, onSetTour }: Props) {
     },
     {
       selector:
-        '[class="MuiButtonBase-root MuiAccordionSummary-root MuiAccordionSummary-gutters css-sh22l5-MuiButtonBase-root-MuiAccordionSummary-root"]',
+        '.MuiButtonBase-root.MuiAccordionSummary-root.MuiAccordionSummary-gutters',
       content: 'View question to generate.',
       action: (element: { click: () => void }) => {
         element.click();
@@ -196,9 +194,6 @@ export default function EvalquizTour({ tour, onSetTour }: Props) {
       selector:
         '[aria-label="Sends config to server in order to generate questions"]',
       content: 'Generate questions as configured.',
-      action: (element: { click: () => void }) => {
-        element.click();
-      },
     },
     {
       selector:
