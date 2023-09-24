@@ -18,8 +18,10 @@ export default function App() {
   const [tour, setTour] = useState(false);
 
   const handleSetTour = (value: boolean) => {
-    setAdvancedMode(false);
-    setCurrentPage('Lecture Materials');
+    if (value === true) {
+      setAdvancedMode(false);
+      setCurrentPage('Lecture Materials');
+    }
     setTour(value);
   };
 
