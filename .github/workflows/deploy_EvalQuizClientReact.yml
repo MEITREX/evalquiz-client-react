@@ -1,0 +1,28 @@
+name: Build and push to Azure Container Registry - EvalQuizClientReact
+
+on:
+  push:
+    branches:
+      - deploy
+
+jobs:
+  build:
+    runs-on: "ubuntu-latest"
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log in to registry
+        uses: docker/login-action@v2
+        with:
+          registry: https://evalquizcontainers.azurecr.io/
+          username: ${{ secrets.AzureAppService_ContainerUsername_94f32dcd15f8459faea1082327732dca }}
+          password: ${{ secrets.AzureAppService_ContainerPassword_30f3974b3a3e467da667ca372fa1cc26 }}
+      - run: |
+          docker build -f ./production-dockerfile . -t evalquizcontainers.azurecr.io/evalquiz-client-react
+          docker push evalquizcontainers.azurecr.io/evalquiz-client-react
