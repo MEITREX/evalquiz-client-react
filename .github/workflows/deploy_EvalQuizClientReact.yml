@@ -21,8 +21,8 @@ jobs:
         uses: docker/login-action@v2
         with:
           registry: https://evalquizcontainers.azurecr.io/
-          username: ${{ secrets.AzureAppService_ContainerUsername_94f32dcd15f8459faea1082327732dca }}
-          password: ${{ secrets.AzureAppService_ContainerPassword_30f3974b3a3e467da667ca372fa1cc26 }}
+          username: ${{ secrets.AzureAppService_ContainerUsername }}
+          password: ${{ secrets.AzureAppService_ContainerPassword }}
       - run: |
           docker build -f ./production-dockerfile . -t evalquizcontainers.azurecr.io/evalquiz-client-react
           docker push evalquizcontainers.azurecr.io/evalquiz-client-react
