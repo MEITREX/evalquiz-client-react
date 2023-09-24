@@ -19,6 +19,7 @@ import TourIcon from '@mui/icons-material/Tour';
 
 interface Props {
   onPageChange: (item: string) => void;
+  advancedMode: boolean;
   onToggleAdvancedMode: (item: boolean) => void;
   onSetTour: (item: boolean) => void;
 }
@@ -28,6 +29,7 @@ const settings = ['Advanced mode'];
 
 function ResponsiveAppBar({
   onPageChange,
+  advancedMode,
   onToggleAdvancedMode,
   onSetTour,
 }: Props) {
@@ -53,12 +55,9 @@ function ResponsiveAppBar({
     setAnchorElUser(null);
   };
 
-  const [checkedAdvancedMode, setCheckedAdvancedMode] = React.useState(false);
-
   const handleChangeAdvancedMode = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setCheckedAdvancedMode(event.target.checked);
     onToggleAdvancedMode(event.target.checked);
   };
 
@@ -198,7 +197,7 @@ function ResponsiveAppBar({
                     <FormControlLabel
                       control={
                         <Switch
-                          checked={checkedAdvancedMode}
+                          checked={advancedMode}
                           onChange={handleChangeAdvancedMode}
                         />
                       }

@@ -11,6 +11,14 @@ export default function EvalquizTour({ tour, onSetTour }: Props) {
     onSetTour(false);
   };
 
+  const tryElementClick = (element: { click: () => void }) => {
+    try {
+      element.click();
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   const steps = [
     {
       selector: '[id="uploadFileButton"]',
@@ -24,8 +32,7 @@ export default function EvalquizTour({ tour, onSetTour }: Props) {
       },
     },
     {
-      selector:
-        '[class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeLarge css-mf1cb5-MuiButtonBase-root-MuiIconButton-root"]',
+      selector: '[aria-label="Add to Batches"]',
       content: () => (
         <Fragment>
           Add a new batch: <br />
@@ -122,7 +129,8 @@ export default function EvalquizTour({ tour, onSetTour }: Props) {
         '[class="MuiTabs-flexContainer css-heg063-MuiTabs-flexContainer"]',
       content: 'Go to lecture materials.',
       action: (element: { children: { click: () => void }[] }) => {
-        element.children[1].click();
+        let child = element.children[1];
+        child.click();
       },
     },
     {
@@ -156,7 +164,8 @@ export default function EvalquizTour({ tour, onSetTour }: Props) {
         '[class="MuiTabs-flexContainer css-heg063-MuiTabs-flexContainer"]',
       content: 'Go to question to generate',
       action: (element: { children: { click: () => void }[] }) => {
-        element.children[2].click();
+        let child = element.children[2];
+        child.click();
       },
     },
     {

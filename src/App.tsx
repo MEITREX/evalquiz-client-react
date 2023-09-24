@@ -5,6 +5,7 @@ import './App.css';
 import AppBar from './components/AppBar';
 import { SnackbarProvider } from 'notistack';
 import EvalquizTour from './components/EvalquizTour';
+import ErrorBoundary from './components/ErrorBoundary';
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState('Lecture Materials');
@@ -17,6 +18,7 @@ export default function App() {
   const [tour, setTour] = useState(false);
 
   const handleSetTour = (value: boolean) => {
+    setAdvancedMode(false);
     setCurrentPage('Lecture Materials');
     setTour(value);
   };
@@ -27,10 +29,13 @@ export default function App() {
 
   return (
     <SnackbarProvider>
-      <EvalquizTour tour={tour} onSetTour={handleSetTour} />
+      <ErrorBoundary>
+        <EvalquizTour tour={tour} onSetTour={handleSetTour} />
+      </ErrorBoundary>
       <AppBar
         onPageChange={handleCurrentPage}
         onSetTour={handleSetTour}
+        advancedMode={advancedMode}
         onToggleAdvancedMode={handleToggleAdvancedMode}
       />
       {currentPage === 'Lecture Materials' ? <LectureMaterials /> : null}
