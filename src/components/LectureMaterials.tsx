@@ -122,9 +122,12 @@ export default function LectureMaterials() {
         enqueueSnackbar('File successfully uploaded!', {
           variant: 'success',
         });
-        enqueueSnackbar('You can proceed with Question Generation in ', {
-          variant: 'info',
-        });
+        enqueueSnackbar(
+          'You can proceed with question generation in "Config Iteration"',
+          {
+            variant: 'info',
+          }
+        );
         closeSnackbar(key);
         fetchMaterialHashNamePairs();
       })

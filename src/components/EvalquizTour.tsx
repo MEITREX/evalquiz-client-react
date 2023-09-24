@@ -11,14 +11,6 @@ export default function EvalquizTour({ tour, onSetTour }: Props) {
     onSetTour(false);
   };
 
-  const tryElementClick = (element: { click: () => void }) => {
-    try {
-      element.click();
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
   const steps = [
     {
       selector: '[id="uploadFileButton"]',
@@ -36,9 +28,7 @@ export default function EvalquizTour({ tour, onSetTour }: Props) {
       content: () => (
         <Fragment>
           Add a new batch: <br />
-          <br />
-          Capabilities and lecture materials influence the questions generated
-          in the respective batch.
+          <br />A batch is a isolated set of question generation settings.
         </Fragment>
       ),
       action: (element: { click: () => void }) => {
@@ -56,7 +46,7 @@ export default function EvalquizTour({ tour, onSetTour }: Props) {
     {
       selector:
         '.MuiButtonBase-root.MuiTab-root.MuiTab-textColorInherit.Mui-selected',
-      content: 'Edit Capabilites to influence question generation outcome.',
+      content: 'Edit Capabilites to influence question generation in batch.',
       action: (element: { click: () => void }) => {
         element.click();
       },
@@ -66,8 +56,7 @@ export default function EvalquizTour({ tour, onSetTour }: Props) {
       content: () => (
         <Fragment>
           Add a new Capability: <br />
-          <br /> Capabilities should enable a student to answer the question(s)
-          we are about to generate.
+          <br /> Questions that quiz the Capabilities are generated later on.
         </Fragment>
       ),
       action: (element: { click: () => void }) => {
@@ -87,14 +76,19 @@ export default function EvalquizTour({ tour, onSetTour }: Props) {
       content: () => (
         <Fragment>
           Choose Educational Objective: <br />
-          <br /> Describes what a student should be able to do with the
-          specified keywords.
+          <br /> Describes educational goal of our Capability. Goal is reached,
+          if a student has acquired the Capability.
         </Fragment>
       ),
     },
     {
       selector: '[aria-label="Add to Keywords button"]',
-      content: 'Add keyword.',
+      content: () => (
+        <Fragment>
+          Add a keyword: <br />
+          <br /> Keywords describe the context/scope of Educational Objectives.
+        </Fragment>
+      ),
       action: (element: { click: () => void }) => {
         element.click();
       },
@@ -119,9 +113,11 @@ export default function EvalquizTour({ tour, onSetTour }: Props) {
       content: () => (
         <Fragment>
           Select relationship of keywords: <br />
-          <br /> Describes how the Educational Objective can be applied, for
-          examples: "Know and understand the differences between keyword A and
-          keyword B."
+          <br /> Describes which keyword relationship aspect we want to
+          highlight. For example: "The differences between keyword A and keyword
+          B." <br />
+          <br /> "COMPLEX" can be chosen, if none of the other relationships are
+          suitable.
         </Fragment>
       ),
     },
@@ -153,8 +149,8 @@ export default function EvalquizTour({ tour, onSetTour }: Props) {
       content: () => (
         <Fragment>
           Select lecture material: <br />
-          <br /> Here we can choose the lecture material we have uploaded
-          earlier.
+          <br /> Here we can choose one of the lecture materials we have
+          uploaded earlier.
         </Fragment>
       ),
     },
